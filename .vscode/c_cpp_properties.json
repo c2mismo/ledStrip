@@ -3,14 +3,14 @@
         {
             "name": "Linux",
             "includePath": [
-                "/home/c2mismo/.arduino-1.8.12/tools/**",
-                "/home/c2mismo/.arduino-1.8.12/hardware/arduino/avr/**",
-                "/home/c2mismo/.arduino-1.8.12/hardware/tools/avr/**",
-                "/home/c2mismo/Arduino/libraries/FastLED",
-                "/home/c2mismo/Arduino/libraries/RemoteXY"
+                "/home/c2mismo2/Arduino/libraries/FastLED",
+                "/home/c2mismo2/Arduino/libraries/RemoteXY",
+                "/home/c2mismo2/.bin/arduino-1.8.12/hardware/arduino/avr/**",
+                "/home/c2mismo2/.bin/arduino-1.8.12/hardware/tools/avr/**",
+                "/home/c2mismo2/.bin/arduino-1.8.12/tools/**"
             ],
             "forcedInclude": [
-                "/home/c2mismo/.arduino-1.8.12/hardware/arduino/avr/cores/arduino/Arduino.h"
+                "/home/c2mismo2/.bin/arduino-1.8.12/hardware/arduino/avr/cores/arduino/Arduino.h"
             ],
             "intelliSenseMode": "gcc-x64",
             "compilerPath": "/usr/bin/gcc",
