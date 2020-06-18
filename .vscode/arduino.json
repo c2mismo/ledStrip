@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "WS2815-HSV/WS2815-HSV.ino",
+    "port": "/dev/ttyUSB0"
+}
