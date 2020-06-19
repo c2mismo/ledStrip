@@ -1,10 +1,10 @@
 
 #include <SoftwareSerial.h>
 
-#define RxD 10
-#define TxD 11
-//  #define RST 5    // alimentecion 5v del BT  (conectar directamente a 3.3v)
-//  #define KEY 4    //  EN del BT  (no hace falta) porque tiene el boton
+#define RxD 10    //------>Tx BT
+#define TxD 11    //------>Rx BT
+//#define RST 12    // alimentecion 5v del BT  (conectar directamente a 3.3v~5v)
+//#define KEY 4    //  EN del BT  (no hace falta) porque tiene el boton
 
 // en el nuestro tendras que mantener el boton pulsado
 // antes de enviar el comando.
@@ -13,7 +13,7 @@ SoftwareSerial BTSerial(RxD, TxD);
 
 void setup()
 {
-/*  
+ /*
   pinMode(RST, OUTPUT);
   pinMode(KEY, OUTPUT);
   digitalWrite(RST, LOW);
@@ -26,7 +26,7 @@ void setup()
   
   BTSerial.flush();
   delay(500);  */
-  BTSerial.begin(38400);
+  BTSerial.begin(9600);
   Serial.begin(9600);
   Serial.println("Pulse botton and enter AT commands:");
 
