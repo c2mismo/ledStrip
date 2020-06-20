@@ -5,6 +5,7 @@
             "includePath": [
                 "/home/c2mismo2/Arduino/libraries/FastLED",
                 "/home/c2mismo2/Arduino/libraries/RemoteXY",
+                "/home/c2mismo2/Arduino/libraries/IRremote",
                 "/home/c2mismo2/.arduino15/packages/arduino/hardware/avr/1.8.3/**",
                 "/home/c2mismo2/.arduino15/packages/arduino/tools/**"
             ],
