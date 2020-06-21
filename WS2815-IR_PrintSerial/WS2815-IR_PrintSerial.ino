@@ -52,14 +52,13 @@ void loop() {
     if ( IR.value == 0x1FEB04F ){ btnIR = 12; }
     if ( IR.value == 0x1FE708F ){ btnIR = 13; }
     irrecv.resume();
+    ledWrite(btnIR);    // Importante en decode para que el boton no quede siempre activo
+    btnIR=0;            // Quitar para que el boton actue libre
   }
 
 
-  ledWrite(btnIR);
   ledShow();
   FastLED.show();
-  btnIR = 0;
-  delay(10);
 }
 
 
