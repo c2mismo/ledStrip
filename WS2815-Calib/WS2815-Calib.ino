@@ -6,6 +6,7 @@ CRGB leds[NUM_LEDS];
 
 void setup() { 
   LEDS.addLeds<WS2813, LED_PIN, RGB>(leds, NUM_LEDS);
+  LEDS.setBrightness(15);
 }
 
 void loop() {

@@ -12,8 +12,8 @@ byte valHue = 0, valSat = 0, valVal = 15;
 
 void setup() { 
   Serial.begin(9600);
-  LEDS.addLeds<WS2813, LED_PIN, GRB>(leds, NUM_LEDS); // GRB
-  LEDS.setBrightness(5);
+  LEDS.addLeds<WS2813, LED_PIN, GRB>(leds, NUM_LEDS);
+  LEDS.setBrightness(15);
   for (byte led = 0; led < NUM_LEDS; led = led + 1) { leds[led] = CRGB::White; } FastLED.show();
 }
 
@@ -80,6 +80,3 @@ void loop() {
     
     
 }
-
-
-
