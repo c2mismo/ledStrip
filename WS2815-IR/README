@@ -1,0 +1,101 @@
+
+
+
+
+Respuestas inesperadas:
+
+///////////////////////////////////////
+Se queda el boton siempre activo
+
+if ( IR.value == 0x1FE708F ){ btnIR = 13; }
+    irrecv.resume();
+  }
+  ledWrite(btnIR);
+  ledShow();
+  FastLED.show();
+  delay(10);
+}
+
+///////////////////////////////////////
+Actua a cada pulsacion:
+
+    if ( IR.value == 0x1FE708F ){ btnIR = 13; }
+    irrecv.resume();
+  }
+  ledWrite(btnIR);
+  ledShow();
+  FastLED.show();
+  btnIR = 0;
+  delay(10);
+}
+
+///////////////////////////////////////
+Idem
+
+if ( IR.value == 0x1FE708F ){ btnIR = 13; }
+    irrecv.resume();
+    ledWrite(btnIR);
+    ledShow();
+    btnIR=0;
+  }
+  FastLED.show();
+  delay(10);
+}
+
+///////////////////////////////////////
+Mientras pulsas actua
+
+if ( IR.value == 0x1FE708F ){ btnIR = 13; }
+    ledWrite(btnIR);
+    ledShow();
+    irrecv.resume();
+  }
+  FastLED.show();
+  delay(10);
+}
+
+///////////////////////////////////////
+Idem
+
+if ( IR.value == 0x1FE708F ){ btnIR = 13; }
+    irrecv.resume();
+    ledWrite(btnIR);
+    ledShow();
+  }
+  FastLED.show();
+}
+
+///////////////////////////////////////
+delay, no se nota mucho, 
+solo hace el proceso mas lento
+
+if ( IR.value == 0x1FE708F ){ btnIR = 13; }
+    ledWrite(btnIR);
+    ledShow();
+    irrecv.resume();
+  }
+  FastLED.show();
+  delay(10);
+}
+
+///////////////////////////////////////
+delay, dentro del decode se produce un
+retraso entre los led (tartamudean)
+
+if ( IR.value == 0x1FE708F ){ btnIR = 13; }
+  	delay(10);
+    ledWrite(btnIR);
+    ledShow();
+    irrecv.resume();
+  }
+  FastLED.show();
+}
+
+
+
+
+
+
+
+
+
