@@ -18,15 +18,16 @@ CRGB leds[NUM_LEDS];
 int option;
 byte led = 0;
 
-//byte valHue = 0, valSat = 0, valVal = 0;
-byte valHue = 0, valSat = 255, valVal = 150;
-bool  flagHue = 0;
+//byte valHue = 128, valSat = 0, valVal = 0;
+byte valHue = 0, valSat = 255, valVal = 25;
+bool flagHue = 0;
 
 //Conf IRremote
 const byte RECV_PIN = 11;
 IRrecv irrecv(RECV_PIN);
 decode_results IR;
 byte btnIR;
+byte lastB;
 
 void setup() {
   Serial.begin(9600);
@@ -36,8 +37,8 @@ void setup() {
 }
 
 void loop() {
-  if (irrecv.decode(&IR)) {
-    if ( IR.value == 0x1FE48B7 ){ btnIR = 1; }
+  if (irrecv.decode(&IR)) {                     // Hacemos lectura IR
+    if ( IR.value == 0x1FE48B7 ){ btnIR = 1; }  // Identificamos botones
     if ( IR.value == 0x1FE7887 ){ btnIR = 2; }
     if ( IR.value == 0x1FE807F ){ btnIR = 3; }
     if ( IR.value == 0x1FE40BF ){ btnIR = 4; }
@@ -50,149 +51,124 @@ void loop() {
     if ( IR.value == 0x1FE30CF ){ btnIR = 11; }
     if ( IR.value == 0x1FEB04F ){ btnIR = 12; }
     if ( IR.value == 0x1FE708F ){ btnIR = 13; }
-    ledWrite(btnIR);
     irrecv.resume();
-    FastLED.show();
-    delay(10);
   }
+
+
+  ledWrite(btnIR);
+  ledShow();
+  FastLED.show();
+  btnIR = 0;
+  delay(10);
 }
 
 
 
 
 
-void ledWrite(byte B){
 
-    Serial.print("Boton = ");
-    Serial.println(B);
+void ledWrite(byte B){           // Seleccionamos el color(hue), la saturacion(sat) y el brillo(val) que
+                                 // queremos introducirle a los led seleccionados
+
 // Rojo
   if (B == 3){
-    if (valHue > 128 && valHue < 213) { valHue = 213; flagHue = 1;}
-    else if (valHue < 128 && valHue > 43) { valHue = 43; flagHue = 0;}
+    if ( lastB == 8 ) { flagHue = 1; }  // Cambiamos valor con referencia,
+    if ( lastB == 6 ) { flagHue = 0; }  // solo, a los botones continuos.
 
-    else if (flagHue == 1) {
-      if (valHue >= 255){ valHue = 0; }
-      else if (valHue > 42 && valHue < 128){ flagHue = 0; valHue = 43; }
+    if (valHue > 128 && valHue < 213) { valHue = 213; flagHue = 1;} // Acordamos los límites para aumentar
+    else if (valHue < 128 && valHue > 43) { valHue = 43; flagHue = 0;}  // Acordamos los límites para disminuir
+
+    else if (flagHue == 1) {            // Aumentamos valor
+      if (valHue >= 255){ valHue = 0; } // Acordamos límite para invertir accion
       else { valHue = valHue + 1; }
     }
-    else if (flagHue == 0) {
-      if (valHue <= 0){ valHue = 255; }
-      else if (valHue <= 213 && valHue > 44){ flagHue = 1; valHue = 213; }
+    else if (flagHue == 0) {            // Aumentamos valor
+      if (valHue <= 0){ valHue = 255; } // Acordamos límite para invertir accion
       else { valHue = valHue - 1; }
     }
-    for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
   }
 // Amarillo
   if(B == 6) {
-    if (valHue >= 170 && valHue < 255) { valHue = 255; flagHue = 1;}
-    else if (valHue < 170 && valHue > 85) { valHue = 85; flagHue = 0;}
+    if ( lastB == 3 ) { flagHue = 1; }
+    if ( lastB == 4 ) { flagHue = 0; }
 
-    else if (flagHue == 1) {
-      if (valHue <= 255 && valHue > 170){ valHue = 0; }
-      else if (valHue >= 85 && valHue < 170){ flagHue = 0; valHue = 85; }
-      else { valHue = valHue + 1; }
-    }
-    else if (flagHue == 0) {
-      if (valHue <= 0){ flagHue = 1; valHue = 0; }
-      else { valHue = valHue - 1; }
-    }
-    for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
+    if (valHue >= 170 || valHue < 0) { valHue = 0; flagHue = 1;}
+    else if (valHue > 85 && valHue < 170) { valHue = 85; flagHue = 0;}
+
+    else if (flagHue == 1) { valHue = valHue + 1; }
+    else if (flagHue == 0) { valHue = valHue - 1; }
   }
 //Verde
   if (B == 4){
-    if (valHue >= 213 && valHue < 255) { valHue = 43; flagHue = 1;}
-    else if (valHue >= 0 && valHue < 43) { valHue = 43; flagHue = 1;}
+    if ( lastB == 6 ) { flagHue = 1; }
+    if ( lastB == 7 ) { flagHue = 0; }
+
+    if (valHue < 43 || valHue >= 213) { valHue = 43; flagHue = 1;}
     else if (valHue < 213 && valHue > 128) { valHue = 128; flagHue = 0;}
 
-    else if (flagHue == 1) {
-      if (valHue == 255){ valHue = 0; }
-      else if (valHue >= 128){ flagHue = 0; valHue = 128; }
-      else { valHue = valHue + 1; }
-    }
-    else if (flagHue == 0) {
-      if (valHue <= 43){ flagHue = 1; valHue = 43; }
-      else { valHue = valHue - 1; }
-    }
-    for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
+    else if (flagHue == 1) { valHue = valHue + 1; }
+    else if (flagHue == 0) { valHue = valHue - 1; }
   }
 //Agua Marina
   if(B == 7) {
-    if (valHue <= 85) { valHue = 85; flagHue = 1;}
+    if ( lastB == 4 ) { flagHue = 1; }
+    if ( lastB == 5 ) { flagHue = 0; }
+
+    if (valHue < 85) { valHue = 85; flagHue = 1;}
     else if (valHue > 170) { valHue = 170; flagHue = 0;}
 
-    else if (flagHue == 1) {
-      if (valHue >= 170){ flagHue = 0; valHue = 170; }
-      else { valHue = valHue + 1; }
-    }
-    else if (flagHue == 0) {
-      if (valHue <= 85){ flagHue = 1; valHue = 85; }
-      else { valHue = valHue - 1; }
-    }
-    for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
+    else if (flagHue == 1) { valHue = valHue + 1; }
+    else if (flagHue == 0) { valHue = valHue - 1; }
   }
 //Azul
   if (B == 5){
-    if (valHue >= 85 && valHue < 170) { valHue = 170; flagHue = 1;}
+    if ( lastB == 7 ) { flagHue = 1; }
+    if ( lastB == 8 ) { flagHue = 0; }
+
+    if (valHue >= 43 && valHue < 128) { valHue = 128; flagHue = 1;}
     else if (valHue > 213 || valHue < 43) { valHue = 213; flagHue = 0;}
 
-    else if (flagHue == 1) {
-      if (valHue >= 255){ flagHue = 0; valHue = 255; }//  254
-      else { valHue = valHue + 1; }
-    }
-    else if (flagHue == 0) {
-      if (valHue <= 128){ flagHue = 1; valHue = 128; }
-      else { valHue = valHue - 1; }
-    }
-    for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
+    else if (flagHue == 1) { valHue = valHue + 1; }
+    else if (flagHue == 0) { valHue = valHue - 1; }
   }
 //Purpura
   if (B == 8){
+    if ( lastB == 5 ) { flagHue = 1; }
+    if ( lastB == 3 ) { flagHue = 0; }
+
     if (valHue >= 85 && valHue < 170) { valHue = 170; flagHue = 1;}  // Valor extremo 1:=
     else if (valHue < 85) { valHue = 255; flagHue = 0;}
 
-    else if (flagHue == 1) {
-      if (valHue >= 213){ flagHue = 0; valHue = 212; }
-      else { valHue = valHue + 1; }
-    }
-    else if (flagHue == 0) {
-      if (valHue <= 170){ flagHue = 1; valHue = 171; }
-      else { valHue = valHue - 1; }
-    }
-    for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
+    else if (flagHue == 1) { valHue = valHue + 1; }
+    else if (flagHue == 0) { valHue = valHue - 1; }
   }
 
 
 
 
 
-// Sat Saturacion
+// Sat Saturacion (Blanco ~ Color)
   if(B == 9) {
     if (valSat <= 9) { valSat = 0; }
     if (valSat > 9) { valSat = valSat - 10; }
-    for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
   }
   if(B == 10) {
     if (valSat < 245) { valSat = valSat + 10; }
     if (valSat >= 245) { valSat = 255; }
-    for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
   }
-// Value Brillo (ON OFF)
+// Val Brillo (ON OFF)
   if(B == 1) {
     if (valVal <= 9) { valVal = 0; }
     if (valVal > 9) { valVal = valVal - 10; }
-    for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
   }
   if(B == 2) {
     if (valVal < 245) { valVal = valVal + 10; }
     if (valVal >= 245) { valVal = 255; }
-    for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
   }
+  lastB = B;
+}
 
 
-  Serial.print("Boton = ");
-  Serial.print(B);
-
-  Serial.print("   Hue = "), Serial.print(valHue);
-  Serial.print("   Sat = "), Serial.print(valSat);
-  Serial.print("   Val = "), Serial.println(valVal);
+void ledShow(){           // Seleccionamos los led a los que vamos a cambiar el color
+  for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
 }
