@@ -9,20 +9,24 @@
 
 #include <FastLED.h>
 #include <IRremote.h>
-//Conf FstaLed
-#define LED_PIN     5
-#define NUM_LEDS    3
+
+                        //Config FastLed
+const byte LED_PIN = 5;
+const byte NUM_LEDS = 3;
+int firstLed = 2;
+int lastLed = 3;
 
 CRGB leds[NUM_LEDS];
 
 int option;
 byte led = 0;
 
-//byte valHue = 128, valSat = 0, valVal = 0;
-byte valHue = 0, valSat = 255, valVal = 25;
+byte valHue = 128, valSat = 0, valVal = 0;
+//byte valHue = 0, valSat = 255, valVal = 25;
+byte lastValHue = valHue, lastValSat = valSat, lastValVal = valVal;
 bool flagHue = 0;
 
-//Conf IRremote
+                        //Config IRremote
 const byte RECV_PIN = 11;
 IRrecv irrecv(RECV_PIN);
 decode_results IR;
@@ -33,7 +37,9 @@ void setup() {
   Serial.begin(9600);
   irrecv.enableIRIn();
   LEDS.addLeds<WS2813, LED_PIN, GRB>(leds, NUM_LEDS);
-    for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); } FastLED.show();
+  if (firstLed > lastLed){int v = firstLed; firstLed = lastLed, lastLed = v;}
+  firstLed = firstLed - 1;
+  for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); } FastLED.show();
 }
 
 void loop() {
@@ -52,24 +58,21 @@ void loop() {
     if ( IR.value == 0x1FEB04F ){ btnIR = 12; }
     if ( IR.value == 0x1FE708F ){ btnIR = 13; }
     irrecv.resume();
-    ledWrite(btnIR);    // Importante en decode para que el boton no quede siempre activo
+    selecColor(btnIR);    // Importante en decode para que el boton no quede siempre activo
+    printLeds();
+    delay(50);                                // Detectado debounce
   }
-  ledShow();
-  FastLED.show();
+
+
 }
 
 
-
-
-
-
-void ledWrite(byte B){           // Seleccionamos el color(hue), la saturacion(sat) y el brillo(val) que
-                                 // queremos introducirle a los led seleccionados
-
+void selecColor(byte B){           // Seleccionamos el color(hue), la saturacion(sat) y el brillo(val) que
+// Colores                         // queremos introducirle a los led seleccionados
 // Rojo
   if (B == 3){
     if ( lastB == 8 ) { flagHue = 1; }  // Cambiamos valor con referencia,
-    if ( lastB == 6 ) { flagHue = 0; }  // solo, a los botones continuos.
+    if ( lastB == 6 ) { flagHue = 0; }  // solo, a los colores continuos.
 
     if (valHue > 128 && valHue < 213) { valHue = 213; flagHue = 1;} // Acordamos los límites para aumentar
     else if (valHue < 128 && valHue > 43) { valHue = 43; flagHue = 0;}  // Acordamos los límites para disminuir
@@ -140,9 +143,6 @@ void ledWrite(byte B){           // Seleccionamos el color(hue), la saturacion(s
   }
 
 
-
-
-
 // Sat Saturacion (Blanco ~ Color)
   if(B == 9) {
     if (valSat <= 9) { valSat = 0; }
@@ -152,6 +152,7 @@ void ledWrite(byte B){           // Seleccionamos el color(hue), la saturacion(s
     if (valSat < 245) { valSat = valSat + 10; }
     if (valSat >= 245) { valSat = 255; }
   }
+
 // Val Brillo (ON OFF)
   if(B == 1) {
     if (valVal <= 9) { valVal = 0; }
@@ -165,6 +166,10 @@ void ledWrite(byte B){           // Seleccionamos el color(hue), la saturacion(s
 }
 
 
-void ledShow(){           // Seleccionamos los led a los que vamos a cambiar el color
-  for (int i = 0; i < NUM_LEDS; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
+void printLeds(){              /////    escribir solo si a cambiado algo
+  if (valHue != lastValHue || valSat != lastValSat || valVal != lastValVal){
+    for (int i = firstLed; i < lastLed; i = i + 1) { leds[i] = CHSV( valHue, valSat, valVal); }
+    FastLED.show();
+    lastValHue = valHue, lastValSat = valSat, lastValVal = valVal;
+  }
 }
